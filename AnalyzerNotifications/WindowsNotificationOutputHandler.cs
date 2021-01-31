@@ -1,20 +1,19 @@
-﻿using LogsManager.Common.Analyzer;
-using LogsManager.Common.Enums;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Text;
+using System.Reflection; 
 using System.Windows.Forms;
+using System.Collections.Generic;
+using LogsManager.Common.Analyzer;
+using LogsManager.Common.Enums;
 
 namespace LogsManager.Analyzer.Outputs
 {
     public class WindowsNotificationOutputHandler : IAnalyzerOutputHandler
     {
-        private LogMessageParameters[] _includedMessageParameters;
         private string[] _includedAnalysisParameters;
         private NotifyIcon _notifyIcon = new NotifyIcon();
+        private LogMessageParameters[] _includedMessageParameters;
 
         public int OutputID { get; set; }
 
@@ -23,10 +22,6 @@ namespace LogsManager.Analyzer.Outputs
             _includedMessageParameters = analyzerOutputConfig.IncludedMessageParameters;
 
             _includedAnalysisParameters = analyzerOutputConfig.IncludedAnalysisParameters; 
-        }
-
-        public void Dispose()
-        {
         }
 
         public void Output(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
@@ -85,7 +80,10 @@ namespace LogsManager.Analyzer.Outputs
 
         private void NotifyIcon_BalloonTipClicked(object sender, EventArgs e)
         {
-             
+
+        }
+        public void Dispose()
+        {
         }
     }
 }

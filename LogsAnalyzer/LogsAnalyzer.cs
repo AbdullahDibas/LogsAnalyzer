@@ -12,32 +12,41 @@ namespace LogsManager.Analyzer
     internal class LogsAnalyzer : ILogsAnalyzer
     {
         private readonly AnalyzerConfig _analyzerConfig;
+        
+        private readonly ILogsReceiver _logsReceiver;
+        
+        private readonly Dictionary<int, IAnalyzerRuleHandler> _ruleHandlers;
 
-        private readonly Dictionary<int, IAnalyzerRuleHandler> _analyzerRuleHandlers;
+        private readonly Dictionary<int, IAnalyzerOutputHandler> _outputHandlers;
 
-        private readonly Dictionary<int, IAnalyzerOutputHandler> _analyzerOutputHandlers;
-
-        private readonly Dictionary<int, IAnalyzerScheduleHandler> _analyzerScheduleHandlers;
+        private readonly Dictionary<int, IAnalyzerScheduleHandler> _scheduleHandlers;
 
         private BlockingCollection<LogMessage> _analyzerLogsCollection = new BlockingCollection<LogMessage>();
 
-        public LogsAnalyzer(AnalyzerConfig analyzerConfig)
+        public LogsAnalyzer(AnalyzerConfig analyzerConfig, ILogsReceiver logsReceiver,
+            Dictionary<int, IAnalyzerRuleHandler> ruleHandlers,
+            Dictionary<int, IAnalyzerOutputHandler> outputHandlers,
+            Dictionary<int, IAnalyzerScheduleHandler> scheduleHandlers)
         {
             _analyzerConfig = analyzerConfig;
 
-            _analyzerRuleHandlers = RuleHandlerFactory.CreateRulesHandlers(analyzerConfig);
+            _logsReceiver = logsReceiver;
 
-            _analyzerOutputHandlers = OutputsHandlersFactory.GetOutputsHandlers(analyzerConfig);
+            _ruleHandlers = ruleHandlers;
 
-            _analyzerScheduleHandlers = SchedulesHandlersFactory.CreateSchedulesHandlers(analyzerConfig);
+            _outputHandlers = outputHandlers;
 
-            _analyzerRuleHandlers.Values.ToList().ForEach(arh => arh.OnAnalyzerResult += OnAnalyzerResult);
+            _scheduleHandlers = scheduleHandlers;
 
-            StartAnalyzerProcess();
+            _ruleHandlers.Values.ToList().ForEach(arh => arh.OnAnalyzerResult += OnAnalyzerResult);
+           
+            logsReceiver.OnNewLogMessage += LogsReceiver_OnNewLogMessage;
         }
 
-        private void StartAnalyzerProcess()
+        public void Start()
         {
+            _logsReceiver.Start();
+
             Task consumerThread = Task.Factory.StartNew(() =>
             {
                 while (!_analyzerLogsCollection.IsCompleted)
@@ -46,10 +55,9 @@ namespace LogsManager.Analyzer
                     {
                         if (IsLogAnalyzingRequired())
                         {
-                            _analyzerRuleHandlers.Values.ToList().ForEach(r =>
+                            _ruleHandlers.Values.ToList().ForEach(r =>
                             {
-                                if (_analyzerScheduleHandlers.FirstOrDefault(ash => _analyzerConfig.RulesSchedules.ContainsKey(r.RuleID) &&
-                                ash.Key == _analyzerConfig.RulesSchedules[r.RuleID]).Value?.IsValid ?? false)
+                                if (IsValidTime(r.RuleID))
                                 {
                                     r.HandleLog(logMessage);
                                 }
@@ -60,13 +68,29 @@ namespace LogsManager.Analyzer
             });
         }
 
+        private bool IsValidTime(int ruleID)
+        {
+            return _scheduleHandlers.FirstOrDefault(ash => _analyzerConfig.RulesSchedules.ContainsKey(ruleID) &&
+                                ash.Key == _analyzerConfig.RulesSchedules[ruleID]).Value?.IsValid ?? false;
+        }
+
+        private void LogsReceiver_OnNewLogMessage(object sender, LogMessage logMessage)
+        {
+            AnalyzeLog(logMessage);
+        }
+
+        public void AnalyzeLog(LogMessage logMessage)
+        {
+            _analyzerLogsCollection.TryAdd(logMessage);
+        }
+
         private void OnAnalyzerResult(object sender, AnalyzerResultEventArgs e)
         {
             if (e != null)
             {
                 var outputID = _analyzerConfig.RulesOutputs[e.RuleID];
 
-                var outputHandler = _analyzerOutputHandlers.FirstOrDefault(oh => oh.Key == outputID).Value;
+                var outputHandler = _outputHandlers.FirstOrDefault(oh => oh.Key == outputID).Value;
 
                 outputHandler?.Output(ParseLogMessage(e.Messages), e.AnalysisParameters);
             }
@@ -74,7 +98,7 @@ namespace LogsManager.Analyzer
 
         private Dictionary<LogMessageParameters, string>[] ParseLogMessage(LogMessage[] logMessages)
         {
-            return logMessages?.ToList().Select((logMessage) =>              
+            return logMessages?.ToList().Select((logMessage) =>
                     new Dictionary<LogMessageParameters, string>
                     {
                         { LogMessageParameters.DateTime, DateTime.Now.ToString()},
@@ -83,16 +107,6 @@ namespace LogsManager.Analyzer
                         { LogMessageParameters.Tags, logMessage.Tags != null? string.Join(", ", logMessage.Tags) : null},
                         { LogMessageParameters.Params, logMessage.Parameters != null? string.Join("|", logMessage.Parameters.Select(p => p.Key + ":" + p.Value)) : null}
                     }).ToArray();
-        }
-
-        public void AnalyzeLog(LogMessage logMessage)
-        {
-            _analyzerLogsCollection.TryAdd(logMessage);
-        }
-
-        public void AnalyzeLog(LogLevels logLevel, string message, Exception exception = null, string[] tags = null, params KeyValuePair<string, string>[] parameters)
-        {
-            _analyzerLogsCollection.TryAdd(new LogMessage { DateTime = DateTime.Now, Message = message, Exception = exception, LogLevel = logLevel, Tags = tags, Parameters = parameters });                  
         }
 
         private bool IsLogAnalyzingRequired()
@@ -104,13 +118,13 @@ namespace LogsManager.Analyzer
         {
             _analyzerLogsCollection?.CompleteAdding();
 
-            _analyzerOutputHandlers?.ToList().ForEach(aoh => aoh.Value?.Dispose());
+            _outputHandlers?.ToList().ForEach(aoh => aoh.Value?.Dispose());
 
-            _analyzerOutputHandlers?.Clear();
+            _outputHandlers?.Clear();
 
-            _analyzerRuleHandlers?.Clear();
+            _ruleHandlers?.Clear();
 
-            _analyzerScheduleHandlers?.Clear();
+            _scheduleHandlers?.Clear();
         }
     }
 }
