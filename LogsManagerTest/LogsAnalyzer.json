@@ -1,0 +1,205 @@
+{
+  "IsEnabled": true,
+  "LogMessages": [
+    {
+      "ID": 1,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Level",
+          "FilterValue": "Warn",
+          "TextCompareType": "Equals"
+        },
+        {
+          "FilterParameter": "Message",
+          "FilterValue": "10.0.0.132",
+          "TextCompareType": "Contains"
+        }
+      ]
+    },
+    {
+      "ID": 2,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Level",
+          "FilterValue": "Info",
+          "TextCompareType": "Equals"
+        },
+        {
+          "FilterParameter": "Message",
+          "FilterValue": "10.0.0.154",
+          "TextCompareType": "Contains"
+        }
+      ]
+    },
+    {
+      "ID": 3,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Level",
+          "FilterValue": "Debug",
+          "TextCompareType": "Equals"
+        },
+        {
+          "FilterParameter": "Message",
+          "FilterValue": "10.0.0.196",
+          "TextCompareType": "Contains"
+        }
+      ]
+    },
+    {
+      "ID": 4,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Level",
+          "FilterValue": "Info",
+          "TextCompareType": "Equals"
+        },
+        {
+          "FilterParameter": "Message",
+          "FilterValue": "10.0.0.82",
+          "TextCompareType": "Contains"
+        }
+      ]
+    },
+    {
+      "ID": 5,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Tags",
+          "FilterValue": "Clothes",
+          "TextCompareType": "Equals"
+        }
+      ]
+    },
+    {
+      "ID": 6,
+      "LogMessageParameters": [
+        {
+          "FilterParameter": "Message",
+          "FilterValue": "New payment",
+          "TextCompareType": "Contains"
+        }
+      ]
+    }
+  ],
+  "Outputs": [
+    {
+      "$type": "LogsManager.Common.Analyzer.Outputs.FileOutputConfig, LogsManager.Common",
+      "FilePath": "C:\\logs_1.html",
+      "ID": 1,
+      "OutputType": "HTMLFile",
+      "IncludedMessageParameters": [ "DateTime", "Message" ],
+      "IncludedAnalysisParameters": null
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Outputs.FileOutputConfig, LogsManager.Common",
+      "FilePath": "C:\\logs_2.txt",
+      "ID": 2,
+      "OutputType": "File",
+      "IncludedMessageParameters": [ "Level", "Tags" ],
+      "IncludedAnalysisParameters": null
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Outputs.FileOutputConfig, LogsManager.Common",
+      "FilePath": "C:\\logs_3.txt",
+      "ID": 3,
+      "OutputType": "File",
+      "IncludedMessageParameters": [ "Level", "Tags" ],
+      "IncludedAnalysisParameters": null
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Outputs.FileOutputConfig, LogsManager.Common",
+      "FilePath": "C:\\logs_4.csv",
+      "ID": 4,
+      "OutputType": "CSVFile",
+      "IncludedMessageParameters": [ "DateTime", "Level", "Message" ],
+      "IncludedAnalysisParameters": null
+    },
+    {
+      "ID": 5,
+      "OutputType": "WindowsNotification",
+      "IncludedMessageParameters": [ "DateTime", "Level", "Message" ],
+      "IncludedAnalysisParameters": null
+    }
+  ],
+  "Schedules": [
+    {
+      "ID": 1,
+      "ScheduleType": "Always",
+      "StartTimeSpan": "00:00:00",
+      "EndTimeSpan": "00:00:00"
+    },
+    {
+      "ID": 2,
+      "ScheduleType": "OneTimeOnly",
+      "StartTimeSpan": "14:00:00",
+      "EndTimeSpan": "22:00:00"
+    }
+  ],
+  "Rules": [
+    {
+      "$type": "LogsManager.Common.Analyzer.Rules.LogFilterRule, LogsManager.Common",
+      "LogMessagesIDs": [ 1 ],
+      "ID": 1,
+      "IsEnabled": true,
+      "AnalysisType": "LogFilter"
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Rules.TimeDifferenceRule, LogsManager.Common",
+      "FirstLogMessageID": 2,
+      "SecondLogMessageID": 3,
+      "ConditionsIDs": null,
+      "ID": 2,
+      "IsEnabled": true,
+      "AnalysisType": "TimeDifference"
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Rules.LogFrequencyRule, LogsManager.Common",
+      "LogMessageID": 4,
+      "TimeInSeconds": 5,
+      "ID": 3,
+      "IsEnabled": true,
+      "AnalysisType": "LogFrequency"
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Rules.AggregateFunctionRule, LogsManager.Common",
+      "LogMessageID": 5,
+      "ParamName": "Amount",
+      "AggregateFunction": "Sum",
+      "ConditionsIDs": [ 1 ],
+      "ID": 4,
+      "IsEnabled": true,
+      "AnalysisType": "AggregateFunction"
+    },
+    {
+      "$type": "LogsManager.Common.Analyzer.Rules.DuplicateDetectionRule, LogsManager.Common",
+      "LogMessageID": 6,
+      "MaximumNumberOfMonitoredMessages": 10,
+      "ID": 5,
+      "IsEnabled": true,
+      "AnalysisType": "DuplicateDetection"
+    }
+  ],
+  "Conditions": [
+    {
+      "ID": 1,
+      "ParamName": "Value",
+      "CompareType": "HigherThan",
+      "Value": 100
+    }
+  ],
+  "RulesOutputs": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 1
+  },
+  "RulesSchedules": {
+    "1": 2,
+    "2": 2,
+    "3": 1,
+    "4": 1,
+    "5": 1
+  }
+}

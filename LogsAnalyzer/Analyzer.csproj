@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>LogsManager.Analyzer</AssemblyName>
+    <RootNamespace>LogsManager.Analyzer</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <StartupObject></StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Outputs\Template - Copy.html" />
+    <None Remove="Outputs\Template.html" />
+    <None Remove="Outputs\Template2.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Outputs\Template2.html" />
+    <EmbeddedResource Include="Outputs\Template - Copy.html" />
+    <EmbeddedResource Include="Outputs\Template.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width =device-width, initial-scale=1">
+    <style>
+        .container {
+            width: 100%;
+            margin-top: 125px
+        }
+
+        .panel {
+            display: none
+        }
+
+        .panel-body {
+            line-height: 20px;
+            background-color: #e5ffff
+        }
+
+        #actionsBar {
+            position: fixed;
+            background-color: #fff;
+            width: 100%;
+            z-index: 100;
+            top: 60px;
+            height: 50px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            padding-top: 10px;
+            padding-left: 15px;
+            padding-right: 15px
+        }
+
+        .alert-info {
+            border: solid;
+            background-color: #d9d9f7
+        }
+
+            .alert-info:hover {
+                background-color: #31708f;
+                color: #fff
+            }
+
+        #errorsNav {
+            float: left
+        }
+
+        .btn-group button {
+            background-color: #a94442;
+            color: #fff;
+            margin-right: 5px
+        }
+
+            .btn-group button:hover {
+                cursor: pointer
+            }
+
+        .row {
+            margin-top: 40px;
+            padding: 0 10px
+        }
+
+        .pointerCursor {
+            cursor: pointer
+        }
+
+        .alert {
+            display: none
+        }
+
+        .panel-heading span {
+            margin-top: -20px;
+            font-size: 15px
+        }
+
+        body {
+            font-family: Arial,Helvetica,sans-serif
+        }
+
+        .myNavbar {
+            position: fixed;
+            z-index: 100;
+            width: 100%;
+            top: 0;
+            overflow: hidden;
+            background-color: #333
+        }
+
+            .myNavbar span {
+                float: left;
+                font-size: 16px;
+                color: #fff;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none
+            }
+
+        .panel.newEvent {
+            display: none
+        }
+
+        #scrollTopButton {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 18px;
+            border: none;
+            outline: 0;
+            background-color: #2b70e2;
+            color: #fff;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            height: 50px
+        }
+
+            #scrollTopButton:hover {
+                background-color: #00008b
+            }
+
+        .dropdown {
+            float: left;
+            overflow: hidden;
+            color: #fff;
+            margin-top: 10px;
+            font-size: 16px;
+            padding-right: 20px
+        }
+
+            .dropdown .dropbtn {
+                font-size: 16px;
+                border: none;
+                outline: 0;
+                color: #fff;
+                padding: 14px 16px;
+                background-color: inherit;
+                font-family: inherit;
+                margin: 0
+            }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,.2);
+            z-index: 1
+        }
+
+            .dropdown-content a {
+                float: none;
+                color: #000;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                text-align: left
+            }
+
+                .dropdown-content a:hover {
+                    background-color: #ddd
+                }
+
+        .dropdown:hover .dropdown-content {
+            display: block
+        }
+
+        ::-webkit-scrollbar {
+            width: 20px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a9a9a9
+        }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+    var scrollTopButton, lastNavError, isExpandAllRequested = !1, isCollapseAllRequested = !0, timeoutIDsList = [], lastEventID = -1, lastNavErrorEventID = -1; function doTimeout(e, n) { setTimeout(function () { slidePanelBodyDown(e) }, 10 * n) } function slidePanelBodyDown(e) { $(e).slideDown() } function handleOnLoad() {
+        scrollTopButton = document.getElementById("scrollTopButton"),handleErrorLogs(),window.onscroll=function(){scrollFunction()};var e=$(".panel");e.length>500?($("#loadOldEvents").show(),e.slice(e.length-500,e.length-1).show(),e.slice(0,e.length-501).addClass("hiddenEvent")):e.show()}function scrollFunction(){document.body.scrollTop>20||document.documentElement.scrollTop>20?scrollTopButton.style.display="block":scrollTopButton.style.display="none"}function scrollToTop(){lastNavErrorEventID=-1,document.body.scrollTop=0,document.documentElement.scrollTop=0}function handleErrorLogs(){hasErrors()&&($("#nextError").prop("disabled",!1),$("#prevError").prop("disabled",!1))}function hasErrors(){return!0}function ShowSystemNotifcation(){if(window.Notification)if("granted"===Notification.permission)new Notification("Hi there!",{body:"How are you doing?",icon:"https://bit.ly/2DYqRrh"});else Notification.requestPermission().then(function(e){if("granted"===e)new Notification("Hi there!",{body:"How are you doing?",icon:"https://bit.ly/2DYqRrh"});else console.log("User blocked notifications.")}).catch(function(e){console.error(e)});else console.log("Browser does not support notifications.")}$(document).on("click","#expandAll",function(e){if(timeoutIDsList&&timeoutIDsList.length>0){for(let e of timeoutIDsList)clearTimeout(e);timeoutIDsList=[]}var n=$(document).find(".panel-heading");"Expand All"==this.innerText?(isExpandAllRequested=!0,isCollapseAllRequested=!1,this.innerHTML='<a href="#" class="pull-right">Collapse All</a>'):(isExpandAllRequested=!1,isCollapseAllRequested=!0,this.innerHTML='<a href="#" class="pull-right">Expand All</a>');var o,l=1;for(o=n.length-1;o>=0;o--)l++,isExpandAllRequested?timeoutIDsList.push(setTimeout(function(e){isExpandAllRequested&&$(n[e]).find("#collapse").trigger("click")},10*l,o)):timeoutIDsList.push(setTimeout(function(e){isCollapseAllRequested&&$(n[e]).find("#collapse").trigger("click")},10*l,o))}),$(document).on("click","#collapse",function(e){var n=$(this);n.hasClass("panel-collapsed")?(n.parents(".panel").find(".panel-body").slideDown(),n.removeClass("panel-collapsed"),n.find("i").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up")):(n.parents(".panel").find(".panel-body").slideUp(),n.addClass("panel-collapsed"),n.find("i").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down"))}),$(document).on("click","#findButton",function(e){var n=$("#textToFind").val(),o=$(".panel");for(let e of o)-1==$(e).find(".panel-body")[0].innerText.indexOf(n)&&$(e).hide()}),$(document).on("click","btn",function(e){var n=$(this);n.hasClass("panel-collapsed")?(n.parents(".panel").find(".panel-body").slideDown(),n.removeClass("panel-collapsed"),n.find("i").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up")):(n.parents(".panel").find(".panel-body").slideUp(),n.addClass("panel-collapsed"),n.find("i").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down"))}),$(document).on("click","#errorFilter",function(e){$(this)[0].checked?$(".panel-danger").not(".hiddenEvent").show():$(".panel-danger").not(".hiddenEvent").hide()}),$(document).on("click","#infoFilter",function(e){$(this)[0].checked?$(".panel-info").not(".hiddenEvent").show():$(".panel-info").not(".hiddenEvent").hide()}),$(document).on("click","#warningFilter",function(e){$(this)[0].checked?$(".panel-warning").not(".hiddenEvent").show():$(".panel-warning").not(".hiddenEvent").hide()}),$(document).on("click","#copyLog",function(e){var n=$(this),o=n.parents(".panel").find("#collapse"),l=n.parents(".panel").find(".panel-body");o.hasClass("panel-collapsed")&&o.trigger("click");var t=document.createRange();t.selectNode(l[0]),window.getSelection().removeAllRanges(),window.getSelection().addRange(t),document.execCommand("copy"),window.getSelection().removeAllRanges()}),$(document).on("click","#showNewEvents",function(e){var n=$(this);$(".panel.newEvent").removeClass("newEvent"),n.hide()}),$(document).on("click","#nextError",function(e){var n=$(".panel-danger:visible");-1==lastNavErrorEventID?lastNavErrorEventID=n.length-1:0==lastNavErrorEventID?lastNavErrorEventID=n.length-1:lastNavErrorEventID--,(lastNavError=n[lastNavErrorEventID]).scrollIntoView(),window.scrollBy(0,-100)}),$(document).on("click","#prevError",function(e){var n=$(".panel-danger:visible");-1==lastNavErrorEventID?lastNavErrorEventID=0:lastNavErrorEventID-1==n.length?lastNavErrorEventID=0:lastNavErrorEventID++,(lastNavError=n[lastNavErrorEventID]).scrollIntoView(),window.scrollBy(0,-100)}),$(document).on("click","#loadOldEvents",function(e){var n=$(".panel");if(n.length>500){$("#loadOldEvents").hide();var o=n.slice(0,n.length-501);o.removeClass("hiddenEvent"),o.show()}});
+    </script>
+    <title>Logs</title>
+</head>
+<body onload="handleOnLoad()">
+    <button onclick="scrollToTop()" id="scrollTopButton" title="Go to top"><i class="glyphicon glyphicon-arrow-up"></i></button>
+    <div class="myNavbar"><span>Logs Reader</span><div style="float: right;" class="dropdown">         <label class="checkbox-inline"><input id="infoFilter" type="checkbox" value="" checked>Information</label>  <label class="checkbox-inline"><input id="errorFilter" type="checkbox" value="" checked>Error</label><label class="checkbox-inline"><input id="warningFilter" type="checkbox" value="" checked>Warning</label><div class="input-group" style="display: inline-flex; margin-left:50px;color:black"><input id="textToFind" type="text" placeholder="Search"><div class="input-group-btn" id="findButton"><button class="btn btn-default"> <i class="glyphicon glyphicon-filter"></i> </button>   </div></div>  </div> </div> <div id="actionsBar"> <div id="errorsNav"> <label>Errors: </label> <div class="btn-group" role="group" aria-label="Basic example">
+    <button type="button" id="prevError" class="btn btn-secondary" disabled><i class="glyphicon glyphicon-arrow-left"></i> </button>          
+    <button type="button" id="nextError" class="btn btn-secondary" disabled><i class="glyphicon glyphicon-arrow-right"></i> </button>  </div> </div>  <a id="expandAll" href="#" class="pull-right">Collapse All</a> </div>
+    <div class="container" style="width:100%;">
+        <div class="panels" style="flex-direction: column-reverse; display: flex;">
+            <div id="loadOldEvents" class="alert alert-info" role="alert" style="text-align: center;font-weight: bold;border: solid; cursor:pointer">Load older logs ...</div>

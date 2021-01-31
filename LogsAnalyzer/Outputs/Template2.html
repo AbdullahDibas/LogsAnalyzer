@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width =device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: #add8e65c;
+        }
+
+        .logRow {
+            display: block;
+            background-color: white;
+            border-bottom: 10px solid #add8e65c;
+            border-radius: 3px 3px 0px 0px;
+        }
+
+        .warning {            
+            background-color: orange; 
+            padding:5px;
+            border-radius:inherit;
+        }
+
+        .info {
+            background-color: #adcde6;
+            padding: 5px;
+            border-radius: inherit;
+        }
+
+        .logBody {
+            padding: 5px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        var logs = "Hello";
+
+        function addLog(title, body, level) {
+            try {
+                setTimeout(function () {
+                    var elementString = "<div class=\"logRow\"><div class='" + level + "'><b>" + title + "</b></div><br/><span class=\"logBody\">" + body + "<span></div>";
+                    $("body").append(elementString);
+                }, 100);
+            }
+            catch (e) { console.error(e); }
+        }
+    </script>
+</head>
+<body> 
+</body>
+</html>
