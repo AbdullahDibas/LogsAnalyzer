@@ -9,20 +9,18 @@ using System.Text;
 
 namespace LogsManager.Analyzer.Outputs
 {
-    public class EmailOutputHandler : IAnalyzerOutputHandler
+    public class EmailOutputHandler : OutputHandlerBase
     {
         private EmailOutputConfig _emailOutputConfig;
 
         private SmtpClient _smtpClient;
-
-        public int OutputID { get; set; }
-
+         
         public EmailOutputHandler(EmailOutputConfig emailOutputConfig)
         {
             _emailOutputConfig = emailOutputConfig;
         }
 
-        public void Output(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
+        protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
             MailMessage mailMessage = new MailMessage(_emailOutputConfig.FromEmail, _emailOutputConfig.ToEmail, "Subject", "Body");
 
@@ -41,7 +39,7 @@ namespace LogsManager.Analyzer.Outputs
                 Console.Write(ex.Message);
             }
         }
-        public void Dispose()
+        public override void Dispose()
         {
         }
     }

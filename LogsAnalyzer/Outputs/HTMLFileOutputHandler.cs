@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace LogsManager.Analyzer.Outputs
 {
-    public class HTMLFileOutputHandler : IAnalyzerOutputHandler
+    public class HTMLFileOutputHandler : OutputHandlerBase
     {
         private StreamWriter _fileStreamWriter;
         private bool _areHeadersWritten = false;
@@ -18,9 +18,7 @@ namespace LogsManager.Analyzer.Outputs
         private readonly FileOutputConfig _fileOutputConfig;
         private readonly string _resourceName = "LogsManager.Analyzer.Outputs.Template2.html";
         private readonly string panelTemplate = "<script> addLog(\"{0}\", \"{1}\", \"{2}\");</script>";
-
-        public int OutputID => throw new NotImplementedException();
-
+        
         public HTMLFileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
@@ -33,7 +31,7 @@ namespace LogsManager.Analyzer.Outputs
             _synchLock = new object();
         }
 
-        public void Output(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
+        protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
             lock (_synchLock)
             {
@@ -78,7 +76,7 @@ namespace LogsManager.Analyzer.Outputs
             return messageParameters.FirstOrDefault(x => x.Key == LogMessageParameters.DateTime).Value;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _fileStreamWriter.Close();
             _fileStreamWriter.Dispose();

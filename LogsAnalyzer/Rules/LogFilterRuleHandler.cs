@@ -19,7 +19,7 @@ namespace LogsManager.Analyzer.Rules
         {
             RuleID = id;
 
-            _logMessages = analyzerConfig.LogMessages.Where(lm => lm != null && logFilterRule.LogMessagesIDs.Contains(lm.ID)).ToArray();
+            _logMessages =  logFilterRule?.LogMessagesIDs?.Select(logId => analyzerConfig.GetLogMessageConfig(logId)).ToArray();
         }
 
         public int RuleID { get; private set; }
@@ -45,6 +45,10 @@ namespace LogsManager.Analyzer.Rules
 
                 OnAnalyzerResult.Invoke(this, analyzerResultEventArgs);
             }
+        }
+
+        public void Dispose()
+        { 
         }
     }
 }

@@ -60,5 +60,10 @@ namespace LogsManager.Analyzer.Rules
             return sortedLogsMessages.Take(_nextExpectedLogIndex).Any(lm =>
             LogMatchHelper.DoesMatch(lm, logMessage));
         }
+
+        public void Dispose()
+        {
+            sortedLogsMessages = null;
+        }
     }
 }

@@ -120,6 +120,8 @@ namespace LogsManager.Analyzer
 
             _outputHandlers?.ToList().ForEach(aoh => aoh.Value?.Dispose());
 
+            _ruleHandlers?.ToList().ForEach(rh => rh.Value?.Dispose());
+
             _outputHandlers?.Clear();
 
             _ruleHandlers?.Clear();

@@ -45,9 +45,9 @@ namespace LogsManager.Analyzer.Rules
         {
             RuleID = id;
 
-            _firstMessageConfig = analyzerConfig.LogMessages.FirstOrDefault(lm => lm.ID == timeDifferenceRule.FirstLogMessageID);
+            _firstMessageConfig =  analyzerConfig.GetLogMessageConfig(timeDifferenceRule.FirstLogMessageID);
 
-            _secondMessageConfig = analyzerConfig.LogMessages.FirstOrDefault(lm => lm.ID == timeDifferenceRule.SecondLogMessageID);
+            _secondMessageConfig =  analyzerConfig.GetLogMessageConfig(timeDifferenceRule.SecondLogMessageID);
         }
 
         /// <summary>
@@ -90,6 +90,13 @@ namespace LogsManager.Analyzer.Rules
                     _isFirstMessageReceived = false;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _firstMessageConfig = null;
+
+            _secondMessageConfig = null;
         }
     }
 }

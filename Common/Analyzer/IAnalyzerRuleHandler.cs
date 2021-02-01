@@ -8,6 +8,9 @@ namespace LogsManager.Common.Analyzer
 
         void HandleLog(LogMessage logMessage);
 
+
         event EventHandler<AnalyzerResultEventArgs> OnAnalyzerResult;
+
+        void Dispose();
     }
 }

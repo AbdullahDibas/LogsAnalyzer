@@ -53,7 +53,7 @@ namespace LogsManager.Analyzer.Rules
 
             _logFrequencyRule = logFrequencyRule;
 
-            _logMessage = analyzerConfig.LogMessages.FirstOrDefault(lm => lm.ID == _logFrequencyRule.LogMessageID);
+            _logMessage = analyzerConfig.GetLogMessageConfig(_logFrequencyRule.LogMessageID);
 
             _frequencyCheckTimer = new Timer(_logFrequencyRule.TimeInSeconds * 1000);
 
@@ -91,8 +91,24 @@ namespace LogsManager.Analyzer.Rules
             if (LogMatchHelper.DoesMatch(_logMessage, logMessage))
             {
                 _messageCountWithinLastInterval++;
+
                 _totalMessagesCount++;
+
+                AnalyzerResultEventArgs eventArgs = new AnalyzerResultEventArgs
+                {
+                    RuleID = RuleID,
+                    Messages = new LogMessage[] { logMessage }
+                };
+
+                OnAnalyzerResult?.Invoke(this, eventArgs);
             }
+        }
+
+        public void Dispose()
+        {
+            _frequencyCheckTimer.Elapsed -= FrequencyCheckTimer_Elapsed;
+
+            _frequencyCheckTimer.Stop();
         }
     }
 }

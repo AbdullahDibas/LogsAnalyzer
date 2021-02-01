@@ -9,15 +9,13 @@ using LogsManager.Common.Analyzer.Outputs;
 
 namespace LogsManager.Analyzer.Outputs
 {
-    public class CSVFileOutputHandler : IAnalyzerOutputHandler
+    public class CSVFileOutputHandler : OutputHandlerBase
     {
         private readonly FileOutputConfig _fileOutputConfig;
         private StreamWriter _fileStreamWriter;
         private readonly object _synchLock;
         private bool _areHeadersWritten = false;
         private const string DELIMITER = ",";
-
-        public int OutputID { get; set; }
 
         public CSVFileOutputHandler(FileOutputConfig fileOutputConfig)
         {
@@ -31,7 +29,7 @@ namespace LogsManager.Analyzer.Outputs
             }; 
         }
 
-        public void Output(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
+        protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
             lock (_synchLock)
             {
@@ -101,7 +99,7 @@ namespace LogsManager.Analyzer.Outputs
             return formattedMessage;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             lock (_synchLock)
             {

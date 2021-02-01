@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LogsManager.Common;
 using LogsManager.Common.Analyzer;
@@ -8,6 +9,7 @@ namespace LogsManager.Analyzer.Rules
 { 
     /// <summary>
     /// represents a log rule that searches for matches of a specific sequence of logs.
+    /// 
     /// </summary>
     public class SequenceDetectionRuleHandler : IAnalyzerRuleHandler
     {
@@ -15,6 +17,8 @@ namespace LogsManager.Analyzer.Rules
         /// the index of the next expected log in the sequence logs array.
         /// </summary>
         private int _nextExpectedLogIndex;
+
+        private List<LogMessage> _sequenceMessages;
 
         public int RuleID { get; private set; }
 
@@ -29,9 +33,9 @@ namespace LogsManager.Analyzer.Rules
         {
             RuleID = id;
 
-            sortedLogsMessages = analyzerConfig.LogMessages.Where(lm => lm != null && sequenceDetectionRule
-            .SortedLogMessagesIDs.Contains(lm.ID)).ToArray();
-
+            sortedLogsMessages = sequenceDetectionRule?.SortedLogMessagesIDs?
+                .Select(logId => analyzerConfig.GetLogMessageConfig(logId)).ToArray();
+            
             _nextExpectedLogIndex = 0;
         }
 
@@ -43,10 +47,12 @@ namespace LogsManager.Analyzer.Rules
         {
             bool match = false;
 
+            // check if the log message matches the next message configuration in the sequence
             if (LogMatchHelper.DoesMatch(sortedLogsMessages[_nextExpectedLogIndex], logMessage))
             {
                 match = true;
             }
+            // check if the message matches the first one, if yes check the sequence again from the start
             else if (LogMatchHelper.DoesMatch(sortedLogsMessages[0], logMessage))
             {
                 _nextExpectedLogIndex = 0;
@@ -55,22 +61,32 @@ namespace LogsManager.Analyzer.Rules
 
             if (match)
             {
+                _sequenceMessages.Add(logMessage);
+
                 if (_nextExpectedLogIndex < sortedLogsMessages.Length - 1)
                 {
                     _nextExpectedLogIndex++;
                 }
-                else
+                else // if the last message in the sequence is received.
                 {
                     _nextExpectedLogIndex = 0;
 
                     AnalyzerResultEventArgs eventArgs = new AnalyzerResultEventArgs
                     {
-                        RuleID = RuleID
+                        RuleID = RuleID,
+                        Messages = _sequenceMessages.Select(lm => lm.Copy()).ToArray()
                     };
 
                     OnAnalyzerResult.Invoke(this, eventArgs);
+
+                    _sequenceMessages.Clear();
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _sequenceMessages?.Clear();
         }
     }
 }

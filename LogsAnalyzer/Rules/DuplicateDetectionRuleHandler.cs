@@ -8,7 +8,7 @@ using LogsManager.Common.Analyzer.Rules;
 namespace LogsManager.Analyzer.Rules
 {
     /// <summary>
-    /// represents a log rule that detects .
+    /// represents a log rule that detects.
     /// </summary>
     public class DuplicateDetectionRuleHandler : IAnalyzerRuleHandler
     {
@@ -76,6 +76,11 @@ namespace LogsManager.Analyzer.Rules
                     }
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _monitoredLogMessages?.Clear();
         }
     }
 }

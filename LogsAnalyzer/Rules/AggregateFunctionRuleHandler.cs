@@ -120,5 +120,10 @@ namespace LogsManager.Analyzer.Rules
                 }
             }
         }
+
+        public void Dispose()
+        {
+
+        }
     }
 }
