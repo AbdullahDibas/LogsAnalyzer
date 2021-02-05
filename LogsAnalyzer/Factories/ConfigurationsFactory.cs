@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LogsManager.Analyzer.Factories
 {
-    internal static class ConfigurationsFactory
+    public static class ConfigurationsFactory
     {
         /// <summary>
         /// the path of the configuration file. 

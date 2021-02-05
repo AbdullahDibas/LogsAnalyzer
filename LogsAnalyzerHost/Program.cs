@@ -1,10 +1,11 @@
 ﻿using System;
 using LogsManager.Common;
 using LogsManager.Common.Analyzer;
+using LogsManager.Analyzer;
 using LogsManager.Analyzer.Factories;
 using System.Collections.Generic;
 
-namespace LogsManager.Analyzer
+namespace LogsManager.AnalyzerHost
 {
     public class Program
     { 

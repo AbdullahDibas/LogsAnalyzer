@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LogsManager.Analyzer.Factories
 {
-    internal static class LogsReceiverFactory
+    public static class LogsReceiverFactory
     {
         public static ILogsReceiver Create(string[] applicationArgs)
         {

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LogsManager.Analyzer
 {
-    internal class LogsAnalyzer : ILogsAnalyzer
+    public class LogsAnalyzer : ILogsAnalyzer
     {
         private readonly AnalyzerConfig _analyzerConfig;
         
@@ -39,13 +39,16 @@ namespace LogsManager.Analyzer
             _scheduleHandlers = scheduleHandlers;
 
             _ruleHandlers.Values.ToList().ForEach(arh => arh.OnAnalyzerResult += OnAnalyzerResult);
-           
-            logsReceiver.OnNewLogMessage += LogsReceiver_OnNewLogMessage;
+
+            if (logsReceiver != null)
+            {
+                logsReceiver.OnNewLogMessage += LogsReceiver_OnNewLogMessage;
+            }
         }
 
         public void Start()
         {
-            _logsReceiver.Start();
+            _logsReceiver?.Start();
 
             Task consumerThread = Task.Factory.StartNew(() =>
             {

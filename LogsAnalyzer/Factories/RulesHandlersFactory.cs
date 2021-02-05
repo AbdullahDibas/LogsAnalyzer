@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace LogsManager.Analyzer
 {
-    internal static class RuleHandlerFactory
+    public static class RuleHandlerFactory
     {
         private static string _analyzerAssemblyFileName = "LogsManager.Analyzer.dll";
         private static string _namespace = "LogsManager.Analyzer.Rules";

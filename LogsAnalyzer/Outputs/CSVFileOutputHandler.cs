@@ -1,32 +1,27 @@
-﻿using LogsManager.Common.Analyzer;
-using LogsManager.Common.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using LogsManager.Common.Enums;
+using System.Collections.Generic;
 using LogsManager.Common.Analyzer.Outputs;
 
 namespace LogsManager.Analyzer.Outputs
 {
     public class CSVFileOutputHandler : OutputHandlerBase
     {
-        private readonly FileOutputConfig _fileOutputConfig;
+        private bool _isFileAdded = false;
+        private const string DELIMITER = ",";
+        private bool _areHeadersWritten = false;
         private StreamWriter _fileStreamWriter;
         private readonly object _synchLock;
-        private bool _areHeadersWritten = false;
-        private const string DELIMITER = ",";
+        private readonly FileOutputConfig _fileOutputConfig;
 
         public CSVFileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
 
             _synchLock = new object();
-
-            _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
-            {
-                AutoFlush = true
-            }; 
         }
 
         protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)

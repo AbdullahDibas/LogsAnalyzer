@@ -9,6 +9,7 @@
         ExcessiveLogDetection = 4,
         AntiSequenceDetection = 5,
         SequenceDetection = 6,
-        DuplicateDetection = 7
+        DuplicateDetection = 7,
+        MessageAbsenceDetection = 8
     }
 }

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using LogsManager.Common.Analyzer;
 using LogsManager.Common.Enums;
 using LogsManager.Common.Analyzer.Outputs;
 
@@ -10,26 +9,34 @@ namespace LogsManager.Analyzer.Outputs
 {
     public class FileOutputHandler : OutputHandlerBase
     {
-        private readonly FileOutputConfig _fileOutputConfig;
+        private bool _isFileAdded = false;
         private StreamWriter _fileStreamWriter;
         private readonly object _synchLock;
-         
+        private readonly FileOutputConfig _fileOutputConfig;
+        private const string MSG_SEPARATOR_LINE = "---------------------------------------------------------------------------";
+        private const string OUTPUT_SEPARATOR_LINE = "===========================================================================";
+
         public FileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
 
             _synchLock = new object();
-
-            _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
-            {
-                AutoFlush = true
-            };
         }
 
         protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
             lock (_synchLock)
             {
+                if (!_isFileAdded)
+                {
+                    _isFileAdded = true;
+
+                    _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
+                    {
+                        AutoFlush = true
+                    };
+                }
+
                 _fileStreamWriter?.WriteLine(GetFormattedLogMessage(messageParameters, analysisParameters));
             }
         }
@@ -38,42 +45,25 @@ namespace LogsManager.Analyzer.Outputs
         {
             string formattedMessage = "";
 
-            if (messageParameters?.Count() > 0)
-            {
-                for (int i = 0; i < messageParameters.Count(); i++)
-                {
-                    foreach (var parameter in messageParameters[i])
-                    {
-                        if (_fileOutputConfig.IncludedMessageParameters.ToList().Contains(parameter.Key))
-                        {
-                            formattedMessage += parameter.Key.ToString() + " : " + parameter.Value;
-                            formattedMessage += Environment.NewLine;
-                        }
-                    }
+            var outputMessageParameters = messageParameters?.Where(mp => _fileOutputConfig.IncludedMessageParameters?.Any(imp => mp.Keys.Contains(imp))?? true).ToList();
+           
+            var outputAnalysisParameters = analysisParameters?.Where(ap => _fileOutputConfig.IncludedAnalysisParameters?.Contains(ap.Key)?? true).ToList();
 
-                    if (!string.IsNullOrEmpty(formattedMessage))
-                    {
-                        formattedMessage += "---------------------------------------------------------------------------";
-                        formattedMessage += Environment.NewLine;
-                    }
-                }
-            }
-
-            if (analysisParameters?.Count > 0)
+            outputMessageParameters?.ForEach(messageParams =>
             {
-                foreach (var parameter in analysisParameters)
+                messageParams?.ToList().ForEach(param => formattedMessage += param.Key.ToString() + " : " + param.Value + Environment.NewLine);
+
+                if (!string.IsNullOrEmpty(formattedMessage))
                 {
-                    if (_fileOutputConfig.IncludedAnalysisParameters?.ToList().Contains(parameter.Key)??true)
-                    {
-                        formattedMessage += parameter.Key.ToString() + " : " + parameter.Value;
-                        formattedMessage += Environment.NewLine;
-                    }
+                    formattedMessage += MSG_SEPARATOR_LINE + Environment.NewLine;
                 }
-            }
+            });
+
+            outputAnalysisParameters?.ForEach(param => formattedMessage += param.Key.ToString() + " : " + param.Value + Environment.NewLine);
 
             if (!string.IsNullOrEmpty(formattedMessage))
             {
-                formattedMessage += "===========================================================================";
+                formattedMessage += OUTPUT_SEPARATOR_LINE;
             }
 
             return formattedMessage;

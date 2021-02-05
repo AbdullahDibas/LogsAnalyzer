@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LogsManager.Common.Analyzer.Rules;
 using LogsManager.Common.Analyzer.Outputs;
+using LogsManager;
 
 namespace LogsManagerTest
 {
@@ -16,7 +17,9 @@ namespace LogsManagerTest
     {
         static void Main(string[] args)
         {
-            LogsManager.LogsManager logsManager = new LogsManager.LogsManager(IsLogsAnalyzerEnabled);
+            ILogsSender logsSender = new DefaultSender();
+
+            LogsManager.LogsManager logsManager = new LogsManager.LogsManager(IsLogsAnalyzerEnabled, logsSender);
 
             logsManager.Initialize();
              
@@ -355,6 +358,9 @@ namespace LogsManagerTest
             logsManager.Warn("10.0.0.82");
             logsManager.Warn("10.0.0.82");
             logsManager.Warn("10.0.0.82");
+            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(500);
             logsManager.Warn("10.0.0.82");
             logsManager.Warn("10.0.0.82");
             logsManager.Info("10.0.0.79");

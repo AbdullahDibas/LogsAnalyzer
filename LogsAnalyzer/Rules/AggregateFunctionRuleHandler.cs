@@ -49,7 +49,7 @@ namespace LogsManager.Analyzer.Rules
 
             _logMessage = analyzerConfig.LogMessages.FirstOrDefault(lm => lm != null && _aggregateFunctionRule.LogMessageID == lm.ID);
 
-            _conditions = aggregateFunctionRule.ConditionsIDs.Select(cID => analyzerConfig.Conditions.FirstOrDefault(c => c.ID == cID)).ToArray();
+            _conditions = aggregateFunctionRule.ConditionsIDs?.Select(cID => analyzerConfig.Conditions?.FirstOrDefault(c => c.ID == cID)).ToArray();
         }
 
         /// <summary>

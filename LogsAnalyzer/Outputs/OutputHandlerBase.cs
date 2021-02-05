@@ -1,16 +1,17 @@
-﻿using LogsManager.Common.Analyzer;
-using LogsManager.Common.Enums;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using LogsManager.Common.Analyzer;
+using LogsManager.Common.Enums;
 
 namespace LogsManager.Analyzer.Outputs
 {
     public abstract class OutputHandlerBase : IAnalyzerOutputHandler
     {
-        ConcurrentQueue<Action> _outputProcesses = new ConcurrentQueue<Action>();
+        public int OutputID { get; set; }
+
+        private ConcurrentQueue<Action> _outputProcesses = new ConcurrentQueue<Action>();
 
         public OutputHandlerBase()
         {
@@ -25,8 +26,6 @@ namespace LogsManager.Analyzer.Outputs
                 }
             });
         }
-
-        public int OutputID { get; set; }
 
         public void Output(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {

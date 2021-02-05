@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>LogsManager.Analyzer</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LogsManager.Analyzer</RootNamespace>
-    <OutputType>Exe</OutputType>
-    <StartupObject></StartupObject>
+    <AssemblyName>LogsManager.Analyzer</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Outputs\Template2.html" />
     <EmbeddedResource Include="Outputs\Template - Copy.html" />
     <EmbeddedResource Include="Outputs\Template.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <EmbeddedResource Include="Outputs\Template2.html" />
   </ItemGroup>
 
   <ItemGroup>

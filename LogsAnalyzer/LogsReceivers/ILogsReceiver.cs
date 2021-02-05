@@ -3,7 +3,7 @@ using LogsManager.Common;
 
 namespace LogsManager.Analyzer
 {
-    internal interface ILogsReceiver
+    public interface ILogsReceiver
     {
         void Start();
 

@@ -1,17 +1,19 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogsManager", "LogsManager\LogsManager.csproj", "{EB9219CE-4454-4736-8F44-C43EC0A1176F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Analyzer", "LogsAnalyzer\Analyzer.csproj", "{75A8DAFC-320E-447C-9926-E538698938D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzerHost", "LogsAnalyzerHost\AnalyzerHost.csproj", "{75A8DAFC-320E-447C-9926-E538698938D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{51C70CDB-72B8-4228-B7F4-E780CEA1A3D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogsManagerTest", "LogsManagerTest\LogsManagerTest.csproj", "{0DEBEB9A-1DD3-4F85-AC21-BF41EA86EF46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzerNotifications", "AnalyzerNotifications\AnalyzerNotifications.csproj", "{C456F7AB-9939-4645-98E8-74A4DBD21229}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer", "LogsAnalyzer\Analyzer.csproj", "{95A91472-E8CB-4B0E-8AEF-13D4CA076C05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{C456F7AB-9939-4645-98E8-74A4DBD21229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C456F7AB-9939-4645-98E8-74A4DBD21229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C456F7AB-9939-4645-98E8-74A4DBD21229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95A91472-E8CB-4B0E-8AEF-13D4CA076C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95A91472-E8CB-4B0E-8AEF-13D4CA076C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95A91472-E8CB-4B0E-8AEF-13D4CA076C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95A91472-E8CB-4B0E-8AEF-13D4CA076C05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

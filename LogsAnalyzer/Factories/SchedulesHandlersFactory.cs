@@ -5,7 +5,7 @@ using LogsManager.Analyzer.Schedule;
 
 namespace LogsManager.Analyzer
 {
-    internal static class SchedulesHandlersFactory
+    public static class SchedulesHandlersFactory
     {
         public static Dictionary<int, IAnalyzerScheduleHandler> CreateSchedulesHandlers(AnalyzerConfig analyzerConfig)
         {

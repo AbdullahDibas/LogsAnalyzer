@@ -12,6 +12,7 @@ namespace LogsManager.Analyzer.Outputs
 {
     public class HTMLFileOutputHandler : OutputHandlerBase
     {
+        private bool _isFileAdded = false;
         private StreamWriter _fileStreamWriter;
         private bool _areHeadersWritten = false;
         private readonly object _synchLock;
@@ -22,11 +23,6 @@ namespace LogsManager.Analyzer.Outputs
         public HTMLFileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
-             
-            _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
-            {
-                AutoFlush = true
-            };
 
             _synchLock = new object();
         }
@@ -35,6 +31,16 @@ namespace LogsManager.Analyzer.Outputs
         {
             lock (_synchLock)
             {
+                if (!_isFileAdded)
+                {
+                    _isFileAdded = true;
+
+                    _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
+                    {
+                        AutoFlush = true
+                    };
+                }
+
                 for (int i = 0; i < messageParameters.Length; i++)
                 {
                     if (!_areHeadersWritten)

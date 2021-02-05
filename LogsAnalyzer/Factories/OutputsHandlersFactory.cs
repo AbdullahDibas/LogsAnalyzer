@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace LogsManager.Analyzer
 {
-    internal static class OutputsHandlersFactory
+    public static class OutputsHandlersFactory
     {
         private static string _analyzerAssemblyFileName = "LogsManager.Analyzer.dll";
 

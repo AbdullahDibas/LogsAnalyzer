@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace LogsManager.Analyzer
 {
-    public class AnonymousPipesLogsReceiver : ILogsReceiver
+    public class NamedPipesLogsReceiver : ILogsReceiver
     {
         string _pipeHandle;
-        PipeStream _pipeClient;
 
-        public AnonymousPipesLogsReceiver(string pipeHandle)
+        NamedPipeClientStream _pipeClient;
+
+        public NamedPipesLogsReceiver(string pipeHandle)
         {
             _pipeHandle = pipeHandle;
         }
@@ -25,7 +26,9 @@ namespace LogsManager.Analyzer
         {
             Task.Run(() =>
             {
-                _pipeClient = new AnonymousPipeClientStream(PipeDirection.In, _pipeHandle);
+                _pipeClient = new NamedPipeClientStream("LogsAnalyzerPipe");
+
+                _pipeClient.Connect();
 
                 using (StreamReader sr = new StreamReader(_pipeClient))
                 {
@@ -34,9 +37,7 @@ namespace LogsManager.Analyzer
 
                     // Wait for 'sync message' from the server.
                     do
-                    {
-                        Console.WriteLine("[CLIENT] Wait for sync...");
-
+                    { 
                         temp = sr.ReadLine();
 
                         try
@@ -51,12 +52,6 @@ namespace LogsManager.Analyzer
                         }
                     }
                     while (!temp.StartsWith("@End@"));
-
-                    //// Read the server data and echo to the console.
-                    //while ((temp = sr.ReadLine()) != null)
-                    //{
-                    //    Console.WriteLine("[CLIENT] Echo: " + temp);
-                    //}
                 }
 
                 Stop();

@@ -14,22 +14,18 @@ namespace LogsManager
     {
         #region Declarations
         private bool _isLogAnalyzerRunning = false;
-        private string _analyzerAssemblyFileName = "LogsAnalyzer\\LogsManager.Analyzer"; 
         private const int TIMER_INTERVAL = 10000;
         private Timer _checkAnalyzerTimer;
-        private Process _logsAnalyzerProcess;
-        private readonly TextWriter _pipeServerStreamWriter;
-        private readonly AnonymousPipeServerStream _logsManagerPipeServer;
         private Func<bool> _isLogAnalyzerEnabled;
+        private readonly ILogsSender _logsSender;
+
         #endregion
 
-        public LogsManager(Func<bool> isLogAnalyzerEnabled)
+        public LogsManager(Func<bool> isLogAnalyzerEnabled, ILogsSender logsSender)
         {
             _isLogAnalyzerEnabled = isLogAnalyzerEnabled;
 
-            _logsManagerPipeServer = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
-
-            _pipeServerStreamWriter = TextWriter.Synchronized(new StreamWriter(_logsManagerPipeServer) { AutoFlush  = true });
+            _logsSender = logsSender;
         }
 
         public void Initialize()
@@ -42,18 +38,18 @@ namespace LogsManager
 
             _checkAnalyzerTimer.Start();
         }
-
+        
         private void CheckAnalyzerTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            _checkAnalyzerTimer.Stop();
+           _checkAnalyzerTimer.Stop();
 
             bool isLogAnalyzerEnabled = LoadLogsAnalyzerSettings();
 
-            if (isLogAnalyzerEnabled && !IsLogAnalyzerRunning())
+            if (isLogAnalyzerEnabled && !_logsSender.IsRunning())
             {
-                StartLogsAnalyzerProcess();
+                _logsSender.Start();
 
-                _isLogAnalyzerRunning = IsLogAnalyzerRunning();
+                _isLogAnalyzerRunning = _logsSender.IsRunning();
             }
 
             _checkAnalyzerTimer.Start();
@@ -65,36 +61,13 @@ namespace LogsManager
 
             try
             { 
-                isLoaded = (_isLogAnalyzerEnabled?.Invoke()?? false) && File.Exists(_analyzerAssemblyFileName + ".exe");
+                isLoaded = (_isLogAnalyzerEnabled?.Invoke()?? false) && _logsSender.IsEnabled();
             }
             catch
             { }
 
             return isLoaded;
-        }
-
-        private bool IsLogAnalyzerRunning()
-        {
-            Process[] pname = Process.GetProcessesByName("LogsManager.Analyzer");
-
-            return pname.Length > 0;
-        }
-
-        private void StartLogsAnalyzerProcess()
-        {
-            _logsAnalyzerProcess = new Process();
-
-            _logsAnalyzerProcess.StartInfo.FileName = _analyzerAssemblyFileName + ".exe";
-
-            // Pass the client process a handle to the server.
-            _logsAnalyzerProcess.StartInfo.Arguments = _logsManagerPipeServer.GetClientHandleAsString();
-
-            _logsAnalyzerProcess.StartInfo.UseShellExecute = false;
-
-            _logsAnalyzerProcess.Start();
-
-            _logsManagerPipeServer.DisposeLocalCopyOfClientHandle();
-        }
+        } 
 
         public void Debug(string message, string[] tags = null, params KeyValuePair<string, string>[] parameters)
         {
@@ -125,13 +98,13 @@ namespace LogsManager
         {
             if(_isLogAnalyzerRunning)
             {
-                SendLogToAnalyzer(FormatLogMessage(logLevel, message, exception, tags, parameters));
+                _logsSender.SendLog(FormatLogMessage(logLevel, message, exception, tags, parameters));
             }
         }
 
-        private string FormatLogMessage(LogLevels logLevel, string message, Exception exception = null, string[] tags = null, params KeyValuePair<string, string>[] parameters)
+        private LogMessage FormatLogMessage(LogLevels logLevel, string message, Exception exception = null, string[] tags = null, params KeyValuePair<string, string>[] parameters)
         {
-            LogMessage logMessage = new LogMessage 
+            return new LogMessage 
             {
                 DateTime = DateTime.Now, 
                 Message = message,
@@ -140,22 +113,6 @@ namespace LogsManager
                 Tags = tags,
                 Parameters = parameters 
             };
-
-            return JsonConvert.SerializeObject(logMessage);
-        }
-
-        private void SendLogToAnalyzer(string formattedLogMessage)
-        {
-            try
-            {
-                _pipeServerStreamWriter.WriteLine(formattedLogMessage);
-                    
-                _logsManagerPipeServer.WaitForPipeDrain();  
-            }
-            catch (IOException e)
-            {
-                Console.WriteLine("[SERVER] Error: {0}", e.Message);
-            }
         }
     }
 }
