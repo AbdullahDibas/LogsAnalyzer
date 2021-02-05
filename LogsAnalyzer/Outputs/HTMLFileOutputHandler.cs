@@ -15,7 +15,6 @@ namespace LogsManager.Analyzer.Outputs
         private bool _isFileAdded = false;
         private StreamWriter _fileStreamWriter;
         private bool _areHeadersWritten = false;
-        private readonly object _synchLock;
         private readonly FileOutputConfig _fileOutputConfig;
         private readonly string _resourceName = "LogsManager.Analyzer.Outputs.Template2.html";
         private readonly string panelTemplate = "<script> addLog(\"{0}\", \"{1}\", \"{2}\");</script>";
@@ -23,47 +22,42 @@ namespace LogsManager.Analyzer.Outputs
         public HTMLFileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
-
-            _synchLock = new object();
         }
 
         protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
-            lock (_synchLock)
+            if (!_isFileAdded)
             {
-                if (!_isFileAdded)
+                _isFileAdded = true;
+
+                _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
                 {
-                    _isFileAdded = true;
+                    AutoFlush = true
+                };
+            }
 
-                    _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
-                    {
-                        AutoFlush = true
-                    };
-                }
-
-                for (int i = 0; i < messageParameters.Length; i++)
+            for (int i = 0; i < messageParameters.Length; i++)
+            {
+                if (!_areHeadersWritten)
                 {
-                    if (!_areHeadersWritten)
+                    _areHeadersWritten = true;
+
+                    var assembly = Assembly.GetExecutingAssembly();
+
+                    using (Stream stream = assembly.GetManifestResourceStream(_resourceName))
+
+                    using (StreamReader reader = new StreamReader(stream))
                     {
-                        _areHeadersWritten = true;
+                        string result = reader.ReadToEnd();
 
-                        var assembly = Assembly.GetExecutingAssembly();
-
-                        using (Stream stream = assembly.GetManifestResourceStream(_resourceName))
-
-                        using (StreamReader reader = new StreamReader(stream))
-                        {
-                            string result = reader.ReadToEnd();
-
-                            _fileStreamWriter.WriteLine(result);
-                        }
+                        _fileStreamWriter.WriteLine(result);
                     }
-
-                    var logLevel = GetMessageLogLevel(messageParameters[i]);
-
-                    _fileStreamWriter.WriteLine(string.Format(panelTemplate, logLevel.ToString() + " - " + GetLogDateTime(messageParameters[i]),
-                        GetLogMessage(messageParameters[i]), logLevel == LogLevels.Info ? "info" : (logLevel == LogLevels.Error ? "danger" : "warning")));
                 }
+
+                var logLevel = GetMessageLogLevel(messageParameters[i]);
+
+                _fileStreamWriter.WriteLine(string.Format(panelTemplate, logLevel.ToString() + " - " + GetLogDateTime(messageParameters[i]),
+                    GetLogMessage(messageParameters[i]), logLevel == LogLevels.Info ? "info" : (logLevel == LogLevels.Error ? "danger" : "warning")));
             }
         }
 

@@ -11,7 +11,6 @@ namespace LogsManager.Analyzer.Outputs
     {
         private bool _isFileAdded = false;
         private StreamWriter _fileStreamWriter;
-        private readonly object _synchLock;
         private readonly FileOutputConfig _fileOutputConfig;
         private const string MSG_SEPARATOR_LINE = "---------------------------------------------------------------------------";
         private const string OUTPUT_SEPARATOR_LINE = "===========================================================================";
@@ -19,26 +18,21 @@ namespace LogsManager.Analyzer.Outputs
         public FileOutputHandler(FileOutputConfig fileOutputConfig)
         {
             _fileOutputConfig = fileOutputConfig;
-
-            _synchLock = new object();
         }
 
         protected override void ProcessOutput(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
         {
-            lock (_synchLock)
+            if (!_isFileAdded)
             {
-                if (!_isFileAdded)
+                _isFileAdded = true;
+
+                _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
                 {
-                    _isFileAdded = true;
-
-                    _fileStreamWriter = new StreamWriter(_fileOutputConfig.FilePath, true)
-                    {
-                        AutoFlush = true
-                    };
-                }
-
-                _fileStreamWriter?.WriteLine(GetFormattedLogMessage(messageParameters, analysisParameters));
+                    AutoFlush = true
+                };
             }
+
+            _fileStreamWriter?.WriteLine(GetFormattedLogMessage(messageParameters, analysisParameters));
         }
 
         public string GetFormattedLogMessage(Dictionary<LogMessageParameters, string>[] messageParameters, Dictionary<string, string> analysisParameters)
@@ -71,14 +65,11 @@ namespace LogsManager.Analyzer.Outputs
 
         public override void Dispose()
         {
-            lock (_synchLock)
-            {
-                _fileStreamWriter?.Close();
+            _fileStreamWriter?.Close();
 
-                _fileStreamWriter?.Dispose();
+            _fileStreamWriter?.Dispose();
 
-                _fileStreamWriter = null;
-            }
+            _fileStreamWriter = null;
         }
     }
 }

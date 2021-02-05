@@ -141,7 +141,7 @@
       "$type": "LogsManager.Common.Analyzer.Rules.LogFilterRule, LogsManager.Common",
       "LogMessagesIDs": [ 1 ],
       "ID": 1,
-      "IsEnabled": false,
+      "IsEnabled": true,
       "AnalysisType": "LogFilter"
     },
     {
@@ -168,7 +168,7 @@
       "AggregateFunction": "Sum",
       "ConditionsIDs": [ 1 ],
       "ID": 4,
-      "IsEnabled": false,
+      "IsEnabled": true,
       "AnalysisType": "AggregateFunction"
     },
     {
@@ -176,7 +176,7 @@
       "LogMessageID": 6,
       "MaximumNumberOfMonitoredMessages": 10,
       "ID": 5,
-      "IsEnabled": false,
+      "IsEnabled": true,
       "AnalysisType": "DuplicateDetection"
     }
   ],
