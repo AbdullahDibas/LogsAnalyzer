@@ -1,4 +1,6 @@
 ﻿using LogsManager.Common;
+using LogsManager.Common.Analyzer;
+using LogsManager.Common.Analyzer.Receivers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,13 +13,13 @@ namespace LogsManager.Analyzer
 {
     public class NamedPipesLogsReceiver : ILogsReceiver
     {
-        string _pipeHandle;
+        NamedPipesReceiverConfig _logsReceiverConfig;
 
         NamedPipeClientStream _pipeClient;
 
-        public NamedPipesLogsReceiver(string pipeHandle)
+        public NamedPipesLogsReceiver(NamedPipesReceiverConfig logsReceiverConfig)
         {
-            _pipeHandle = pipeHandle;
+            _logsReceiverConfig = logsReceiverConfig;
         }
 
         public event EventHandler<LogMessage> OnNewLogMessage;
@@ -26,7 +28,7 @@ namespace LogsManager.Analyzer
         {
             Task.Run(() =>
             {
-                _pipeClient = new NamedPipeClientStream("LogsAnalyzerPipe");
+                _pipeClient = new NamedPipeClientStream(_logsReceiverConfig.PipeName);
 
                 _pipeClient.Connect();
 

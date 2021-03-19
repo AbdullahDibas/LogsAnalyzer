@@ -51,12 +51,6 @@ namespace LogsManager.Analyzer
                         }
                     }
                     while (!temp.StartsWith("@End@"));
-
-                    //// Read the server data and echo to the console.
-                    //while ((temp = sr.ReadLine()) != null)
-                    //{
-                    //    Console.WriteLine("[CLIENT] Echo: " + temp);
-                    //}
                 }
 
                 Stop();

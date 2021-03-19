@@ -22,7 +22,7 @@ namespace LogsManagerTest
             LogsManager.LogsManager logsManager = new LogsManager.LogsManager(IsLogsAnalyzerEnabled, logsSender);
 
             logsManager.Initialize();
-             
+
             Task.Delay(12000).ContinueWith((t) =>
             {
                 TestFilterOnlyRule(logsManager);
@@ -34,7 +34,7 @@ namespace LogsManagerTest
                 Task.Run(() => TestAggregateFunctionRule(logsManager));
 
                 Task.Run(() => TestDuplicateLogDetectionRule(logsManager));
-            }); 
+            });
 
             //string strJson = JsonConvert.SerializeObject(GetAnalyzerConfig(), new Newtonsoft.Json.Converters.StringEnumConverter());
 
@@ -59,6 +59,8 @@ namespace LogsManagerTest
 
             AnalyzerConfig analyzerConfig = new AnalyzerConfig
             {
+                LogsReceiverConfig = new LogsReceiverConfig { LogReceiverType = LogReceiverTypes.None },
+
                 LogMessages = GetLogMessageConfigs(),
 
                 IsEnabled = true,

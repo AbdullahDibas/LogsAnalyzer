@@ -1,4 +1,4 @@
-﻿using LogsManager.Common.Enums;
+﻿using LogsManager.Common.Enums; 
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +8,8 @@ namespace LogsManager.Common.Analyzer
     public class AnalyzerConfig
     {
         public bool IsEnabled { get; set; }
+
+        public LogsReceiverConfig LogsReceiverConfig { get; set; }
 
         public LogMessageConfig[] LogMessages { get; set; }
 

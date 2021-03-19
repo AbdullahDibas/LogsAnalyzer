@@ -19,7 +19,7 @@ namespace LogsManager.AnalyzerHost
 
                 if (analyzerConfig?.IsEnabled ?? false)
                 {
-                    ILogsReceiver logsReceiver = LogsReceiverFactory.Create(args);
+                    ILogsReceiver logsReceiver = LogsReceiverFactory.Create(args, analyzerConfig);
 
                     Dictionary<int, IAnalyzerRuleHandler> analyzerRuleHandlers = RuleHandlerFactory.CreateRulesHandlers(analyzerConfig);
 

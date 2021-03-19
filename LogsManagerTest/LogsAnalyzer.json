@@ -1,5 +1,6 @@
 {
   "IsEnabled": true,
+  "LogsReceiverConfig": { "LogReceiverType": "None" },
   "LogMessages": [
     {
       "ID": 1,
@@ -85,9 +86,9 @@
   "Outputs": [
     {
       "$type": "LogsManager.Common.Analyzer.Outputs.FileOutputConfig, LogsManager.Common",
-      "FilePath": "C:\\logs_1.html",
+      "FilePath": "C:\\logs_1.txt",
       "ID": 1,
-      "OutputType": "HTMLFile",
+      "OutputType": "File",
       "IncludedMessageParameters": [ "DateTime", "Message" ],
       "IncludedAnalysisParameters": null
     },
@@ -132,8 +133,8 @@
     {
       "ID": 2,
       "ScheduleType": "OneTimeOnly",
-      "StartTimeSpan": "09:00:00",
-      "EndTimeSpan": "22:00:00"
+      "StartTimeSpan": "14:00:00",
+      "EndTimeSpan": "15:00:00"
     }
   ],
   "Rules": [
@@ -156,7 +157,7 @@
     {
       "$type": "LogsManager.Common.Analyzer.Rules.LogFrequencyRule, LogsManager.Common",
       "LogMessageID": 4,
-      "TimeInSeconds": 2,
+      "TimeInSeconds": 5,
       "ID": 3,
       "IsEnabled": true,
       "AnalysisType": "LogFrequency"
@@ -193,7 +194,7 @@
     "2": 2,
     "3": 3,
     "4": 4,
-    "5": 1
+    "5": 4
   },
   "RulesSchedules": {
     "1": 2,
