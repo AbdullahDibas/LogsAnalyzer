@@ -12,8 +12,7 @@ The filters can be on log message, level, tags, specific parameters.
 *NOTE: the analyzer accepts to have optional fields with each log message like Tags (list of tags names) and Params (list of parameters as key value pairs).*
 
 ### Logs Analyzer Rules:
-Analyzer can also applies some rules on the receiving logs by monitowq CXZ`
-The following are the supported rules:
+The library also supports applying analysis methods on the incoming logs. The following are the supported rules:
 - Absence Detection Rule: triggers an output if a specific log is not received within a configured interval in seconds.
 - Aggregate Function Rule: triggers an output when a specific log is received along with a value calculated from a specific parameter passed with the log and using the configured
   aggregate funciton.
