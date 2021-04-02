@@ -18,7 +18,6 @@ namespace LogsManager
         private Timer _checkAnalyzerTimer;
         private Func<bool> _isLogAnalyzerEnabled;
         private readonly ILogsSender _logsSender;
-
         #endregion
 
         public LogsManager(Func<bool> isLogAnalyzerEnabled, ILogsSender logsSender)

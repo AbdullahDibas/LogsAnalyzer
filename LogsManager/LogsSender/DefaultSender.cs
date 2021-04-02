@@ -8,6 +8,9 @@ using System.Text;
 
 namespace LogsManager
 {
+    /// <summary>
+    /// a class used to send logs to the analyzer when it's hosted in the same domin of the original application.
+    /// </summary>
     public class DefaultSender : ILogsSender
     {
         ILogsAnalyzer _logsAnalyzer;

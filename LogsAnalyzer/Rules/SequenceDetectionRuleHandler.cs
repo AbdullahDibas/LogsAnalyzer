@@ -9,7 +9,6 @@ namespace LogsManager.Analyzer.Rules
 { 
     /// <summary>
     /// represents a log rule that searches for matches of a specific sequence of logs.
-    /// 
     /// </summary>
     public class SequenceDetectionRuleHandler : IAnalyzerRuleHandler
     {

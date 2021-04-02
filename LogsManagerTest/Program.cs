@@ -1,15 +1,14 @@
-﻿using LogsManager.Common.Analyzer;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using LogsManager;
 using LogsManager.Common.Enums;
 using LogsManager.Common.Analyzer.Config;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LogsManager.Common.Analyzer;
 using LogsManager.Common.Analyzer.Rules;
 using LogsManager.Common.Analyzer.Outputs;
-using LogsManager;
 
 namespace LogsManagerTest
 {
@@ -17,12 +16,18 @@ namespace LogsManagerTest
     {
         static void Main(string[] args)
         {
-            ILogsSender logsSender = new DefaultSender();
+            //string configurationFileContent = JsonConvert.SerializeObject(GetAnalyzerConfig(), new Newtonsoft.Json.Converters.StringEnumConverter());
 
+            // specify the way you are going to use to send your logs to the analyzer.
+            ILogsSender logsSender = GetLogsSender();
+
+            // initialize the logs managers class that's going to handle incoming logs messages and send them to the analyzer
+            // using the logs sender.
             LogsManager.LogsManager logsManager = new LogsManager.LogsManager(IsLogsAnalyzerEnabled, logsSender);
 
             logsManager.Initialize();
 
+            // the following are some test for analyzer rules.
             Task.Delay(12000).ContinueWith((t) =>
             {
                 TestFilterOnlyRule(logsManager);
@@ -34,19 +39,24 @@ namespace LogsManagerTest
                 Task.Run(() => TestAggregateFunctionRule(logsManager));
 
                 Task.Run(() => TestDuplicateLogDetectionRule(logsManager));
-            });
-
-            //string strJson = JsonConvert.SerializeObject(GetAnalyzerConfig(), new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            //Console.WriteLine(strJson);
+            });            
 
             Console.ReadLine();
         }
 
+        private static ILogsSender GetLogsSender()
+        {
+            ILogsSender logsSender = new DefaultSender(); // Or AnonymousPipesSender or NamedPipesSender if the analyzer is hosted in a separate application.
+
+            return logsSender;
+        }
+
         private static bool IsLogsAnalyzerEnabled()
         {
-            return bool.TryParse(System.Configuration.ConfigurationManager.AppSettings["IsLogsAnalyzerEnabled"]?.ToLower(), out bool isEnabled) && isEnabled;
+            return bool.TryParse(ConfigurationManager.AppSettings["IsLogsAnalyzerEnabled"]?.ToLower(), out bool isEnabled) && isEnabled;
         }
+
+        #region Generate Sample Analyzer Configuration
 
         private static AnalyzerConfig GetAnalyzerConfig()
         {
@@ -306,6 +316,10 @@ namespace LogsManagerTest
             };
         }
 
+        #endregion
+
+        #region Test Methods
+
         static void TestFilterOnlyRule(LogsManager.LogsManager logsManager)
         {
             for (int i = 0; i < 5000; i++)
@@ -395,5 +409,7 @@ namespace LogsManagerTest
             logsManager.Info("New payment submitted by John for the amount 30");
             logsManager.Info("New payment submitted by John for the amount 100");
         }
+
+        #endregion
     }
 }

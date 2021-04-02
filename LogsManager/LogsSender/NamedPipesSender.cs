@@ -8,6 +8,9 @@ using System.Text;
 
 namespace LogsManager
 {
+    /// <summary>
+    /// a class is used to send the logs using named pipes to the analyzer when the analyzer is hosted in a separate application.
+    /// </summary>
     public class NamedPipesSender : ILogsSender
     {
         private TextWriter _pipeServerStreamWriter;
@@ -16,7 +19,7 @@ namespace LogsManager
 
         public bool IsEnabled()
         {
-            return true; ;
+            return true;
         }
 
         public bool IsRunning()

@@ -9,6 +9,9 @@ using System.Text;
 
 namespace LogsManager
 {
+    /// <summary>
+    /// a class is used to send the logs using anonymoius pipes to the analyzer when the analyzer is hosted in a separate application.
+    /// </summary>
     public class AnonymousPipesSender : ILogsSender
     {
         private Process _logsAnalyzerProcess;
